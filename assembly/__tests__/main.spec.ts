@@ -5,6 +5,7 @@ import {
 	getGiveaway,
 	getGiveawayList,
 	getParticipants,
+	getWinners,
 	giveawayList,
 	newGiveaway,
 } from '../main'
@@ -56,22 +57,13 @@ describe('Giveaway ', () => {
 		addParticipant('abc', bob)
 		addParticipant('abc', carol)
 		addParticipant('abc', denise)
-    addParticipant('abc', elijah)
-    
-		const pList = getParticipants('abc', 0, 10)
-		log(pList)
-		const wList = drawWinners('abc', 2)
-    log(wList)
-    addParticipant('abc', 'frans')
-    const wList2 = drawWinners('abc', 2)
-    log(wList2)
-    addParticipant('abc', 'graham')
-    const wList3 = drawWinners('abc', 2)
-    log(wList3)
-	})
+		addParticipant('abc', elijah)
 
-	// it('should draw winners randomly', () => {
-	// 	const winners = drawWinners()
-	// 	log(winners)
-	// })
+		const pList = getParticipants('abc', 0, 10)
+    expect(pList).toHaveLength(4)
+    
+		drawWinners('abc', 2)
+		const wList = getWinners('abc', 2)
+		expect(wList).toHaveLength(2)
+	})
 })
