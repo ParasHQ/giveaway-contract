@@ -53,7 +53,7 @@ export const participantList = new PersistentMap<
 	PersistentVector<string>
 >('pI1')
 
-export function newGiveaway(
+export function createGiveaway(
 	id: string,
 	name: string,
 	startDate: string,
@@ -117,6 +117,17 @@ export function addParticipant(giveawayId: string, accountId: string): string {
 	return accountId
 }
 
+export function addParticipantBulk(
+	giveawayId: string,
+	accountIds: string[]
+): string[] {
+	for (let i = 0; i < accountIds.length; i++) {
+		const accountId = accountIds[i]
+		addParticipant(giveawayId, accountId)
+	}
+	return accountIds
+}
+
 export function getParticipants(
 	giveawayId: string,
 	start: i32,
@@ -128,7 +139,7 @@ export function getParticipants(
 	}
 
 	let results: string[] = []
-	const n = min(start + MAX_LENGTH, min(end, gaParticipantListExist.length))
+	const n = min(MAX_LENGTH, min(end, gaParticipantListExist.length))
 	for (let i = start; i < n; i++) {
 		results.push(gaParticipantListExist[i])
 	}
@@ -136,21 +147,21 @@ export function getParticipants(
 	return results
 }
 
-export function getWinners(giveawayId: string, length: u32): string[] {
+export function getWinners(giveawayId: string, start: i32, end: i32): string[] {
 	const giveaway = getGiveaway(giveawayId)
 
 	// check if giveaway id exist
 	assert(giveaway, ERROR_GIVEAWAY_ID_NOT_EXIST)
 
 	// check if giveaway has been drawn
-	assert(giveaway && giveaway.drawDate, ERROR_GIVEAWAY_DRAW_NOT_EXIST)
+	assert(giveaway && giveaway.drawDate.length > 0, ERROR_GIVEAWAY_DRAW_NOT_EXIST)
 
-	return getParticipants(giveawayId, 0, length)
+	return getParticipants(giveawayId, start, end)
 }
 
 // export function removeParticipants() {}
 
-export function drawWinners(giveawayId: string, length: u32): void {
+export function drawWinners(giveawayId: string, length: u32): string[] {
 	const owner = context.predecessor
 	const giveaway = getGiveaway(giveawayId)
 
@@ -160,7 +171,7 @@ export function drawWinners(giveawayId: string, length: u32): void {
 	// check if sender is giveaway owner
 	assert(giveaway && giveaway.owner == owner, ERROR_GIVEAWAY_OWNER_ONLY)
 
-	assert(giveaway && !giveaway.drawDate, ERROR_GIVEAWAY_DRAW_EXIST)
+	assert(giveaway && giveaway.drawDate.length == 0, ERROR_GIVEAWAY_DRAW_EXIST)
 
 	const gaParticipantListExist = participantList.get(giveawayId)
 
@@ -180,5 +191,7 @@ export function drawWinners(giveawayId: string, length: u32): void {
 		}
 		giveaway.drawDate = ts.toString()
 		giveawayList.set(giveawayId, giveaway)
+		return getWinners(giveawayId, 0, length)
 	}
+	return []
 }

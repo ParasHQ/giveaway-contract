@@ -7,7 +7,7 @@ import {
 	getParticipants,
 	getWinners,
 	giveawayList,
-	newGiveaway,
+	createGiveaway,
 } from '../main'
 
 const alice = 'alice'
@@ -21,7 +21,7 @@ describe('Giveaway ', () => {
 
 	it('should create & get new giveaway', () => {
 		VMContext.setPredecessor_account_id(alice)
-		const id = newGiveaway('abc', 'abc', '123', '456')
+		const id = createGiveaway('abc', 'abc', '123', '456')
 		expect(id).toBe('abc')
 
 		const giveaway = getGiveaway('abc')
@@ -37,11 +37,11 @@ describe('Giveaway ', () => {
 
 	it('should get giveaway list', () => {
 		VMContext.setPredecessor_account_id(alice)
-		const id = newGiveaway('abc', 'abc', '123', '456')
+		const id = createGiveaway('abc', 'abc', '123', '456')
 		expect(id).toBe('abc')
 
 		VMContext.setPredecessor_account_id(bob)
-		const id2 = newGiveaway('def', 'def', '123', '456')
+		const id2 = createGiveaway('def', 'def', '123', '456')
 		expect(id2).toBe('def')
 
 		const giveaway = getGiveawayList(0, 10)
@@ -51,7 +51,7 @@ describe('Giveaway ', () => {
 
 	it('should add participant', () => {
 		VMContext.setPredecessor_account_id(alice)
-		const id = newGiveaway('abc', 'abc', '123', '456')
+		const id = createGiveaway('abc', 'abc', '123', '456')
 		expect(id).toBe('abc')
 
 		addParticipant('abc', bob)
@@ -60,10 +60,10 @@ describe('Giveaway ', () => {
 		addParticipant('abc', elijah)
 
 		const pList = getParticipants('abc', 0, 10)
-    expect(pList).toHaveLength(4)
-    
+		expect(pList).toHaveLength(4)
+
 		drawWinners('abc', 2)
-		const wList = getWinners('abc', 2)
+		const wList = getWinners('abc', 0, 2)
 		expect(wList).toHaveLength(2)
 	})
 })
