@@ -1,21 +1,23 @@
 {
-  "name": "near-contract-template",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev:contract": "NODE_ENV=development nodemon --watch assembly -e ts --exec asp",
-    "build:contract": "asb",
-    "deploy:contract": "NODE_ENV=development npm run build:contract && near dev-deploy"
-  },
-  "dependencies": {
-    "near-api-js": "^0.29.0"
-  },
-  "devDependencies": {
-    "near-sdk-as": "2.1.1",
-    "near-shell": "^0.24.9",
-    "nodemon": "^2.0.4"
-  },
-  "author": "Rahmat Albariqi",
-  "license": "MIT"
+	"name": "near-contract-template",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev:contract": "NODE_ENV=development nodemon --watch assembly -e ts --exec asp",
+		"build:contract": "asb",
+		"deploy:contract:dev": "NODE_ENV=development npm run build:contract && near dev-deploy",
+		"deploy:contract:testnet": "NODE_ENV=development npm run build:contract && near deploy giveaway.paras.testnet ./out/main.wasm",
+		"deploy:contract:mainnet": "NODE_ENV=production npm run build:contract && near deploy giveaway.paras.near ./out/main.wasm"
+	},
+	"dependencies": {
+		"near-api-js": "^0.29.0"
+	},
+	"devDependencies": {
+		"near-sdk-as": "2.1.1",
+		"near-shell": "^0.24.9",
+		"nodemon": "^2.0.4"
+	},
+	"author": "Rahmat Albariqi",
+	"license": "MIT"
 }
