@@ -26,6 +26,7 @@ export class Giveaway {
 	endDate: string
 	owner: string
 	drawDate: string
+	winnersCount: u64
 
 	constructor(
 		id: string,
@@ -40,6 +41,7 @@ export class Giveaway {
 		this.endDate = endDate
 		this.owner = owner
 		this.drawDate = ''
+		this.winnersCount = 0
 	}
 }
 
@@ -154,9 +156,16 @@ export function getWinners(giveawayId: string, start: i32, end: i32): string[] {
 	assert(giveaway, ERROR_GIVEAWAY_ID_NOT_EXIST)
 
 	// check if giveaway has been drawn
-	assert(giveaway && giveaway.drawDate.length > 0, ERROR_GIVEAWAY_DRAW_NOT_EXIST)
+	assert(
+		giveaway && giveaway.drawDate.length > 0,
+		ERROR_GIVEAWAY_DRAW_NOT_EXIST
+	)
 
-	return getParticipants(giveawayId, start, end)
+	if (giveaway) {
+		return getParticipants(giveawayId, start, min(end, giveaway.winnersCount))
+	}
+
+	return []
 }
 
 // export function removeParticipants() {}
@@ -190,6 +199,7 @@ export function drawWinners(giveawayId: string, length: u32): string[] {
 			gaParticipantListExist.replace(swapIdx, p1)
 		}
 		giveaway.drawDate = ts.toString()
+		giveaway.winnersCount = length
 		giveawayList.set(giveawayId, giveaway)
 		return getWinners(giveawayId, 0, length)
 	}
