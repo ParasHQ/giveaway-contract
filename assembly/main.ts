@@ -26,7 +26,7 @@ export class Giveaway {
 	endDate: string
 	owner: string
 	drawDate: string
-	winnersCount: u64
+	winnersCount: u32
 
 	constructor(
 		id: string,
