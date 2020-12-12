@@ -27,6 +27,7 @@ export class Giveaway {
 	owner: string
 	drawDate: string
 	winnersCount: u32
+	proof: string
 
 	constructor(
 		id: string,
@@ -42,6 +43,7 @@ export class Giveaway {
 		this.owner = owner
 		this.drawDate = ''
 		this.winnersCount = 0
+		this.proof = ''
 	}
 }
 
@@ -80,6 +82,28 @@ export function getGiveaway(id: string): Giveaway | null {
 	return giveaway
 }
 
+export function setProof(giveawayId: string, txId: string): void {
+	const owner = context.predecessor
+	const giveaway = getGiveaway(giveawayId)
+
+	// check if giveaway id exist
+	assert(giveaway, ERROR_GIVEAWAY_ID_NOT_EXIST)
+
+	// check if sender is giveaway owner
+	assert(giveaway && giveaway.owner == owner, ERROR_GIVEAWAY_OWNER_ONLY)
+
+	// check if giveaway already drawn
+	assert(
+		giveaway && giveaway.drawDate.length > 0,
+		ERROR_GIVEAWAY_DRAW_NOT_EXIST
+	)
+
+	if (giveaway) {
+		giveaway.proof = txId
+		giveawayList.set(giveawayId, giveaway)
+	}
+}
+
 export function getGiveawayList(start: i32, end: i32): Giveaway[] {
 	if (end > start + MAX_LENGTH) {
 		return giveawayList.values(start, start + MAX_LENGTH)
@@ -97,6 +121,9 @@ export function addParticipant(giveawayId: string, accountId: string): string {
 
 	// check if sender is giveaway owner
 	assert(giveaway && giveaway.owner == owner, ERROR_GIVEAWAY_OWNER_ONLY)
+
+	// check if giveaway already drawn
+	assert(giveaway && giveaway.drawDate.length == 0, ERROR_GIVEAWAY_DRAW_EXIST)
 
 	// check if account id already registered on giveaway
 	const trackerKey = giveawayId + '::' + accountId
@@ -141,7 +168,7 @@ export function getParticipants(
 	}
 
 	let results: string[] = []
-	
+
 	const maxEnd = start + MAX_LENGTH
 	const n = end > maxEnd ? maxEnd : min(end, gaParticipantListExist.length)
 
@@ -183,6 +210,7 @@ export function drawWinners(giveawayId: string, length: u32): string[] {
 	// check if sender is giveaway owner
 	assert(giveaway && giveaway.owner == owner, ERROR_GIVEAWAY_OWNER_ONLY)
 
+	// check if giveaway already drawn
 	assert(giveaway && giveaway.drawDate.length == 0, ERROR_GIVEAWAY_DRAW_EXIST)
 
 	const gaParticipantListExist = participantList.get(giveawayId)
