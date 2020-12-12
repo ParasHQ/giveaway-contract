@@ -141,7 +141,10 @@ export function getParticipants(
 	}
 
 	let results: string[] = []
-	const n = min(MAX_LENGTH, min(end, gaParticipantListExist.length))
+	
+	const maxEnd = start + MAX_LENGTH
+	const n = end > maxEnd ? maxEnd : min(end, gaParticipantListExist.length)
+
 	for (let i = start; i < n; i++) {
 		results.push(gaParticipantListExist[i])
 	}
